@@ -53,13 +53,20 @@ class File:
     comment_specifier: str
 
 supported_file_extensions: list[str] = [
+    # Latex
     "tex",
+    # Python
     "py",
+    # C
+    "c",
+    "h",
 ]
 
 comment_specifiers: dict[str, str] = {
     "tex": "%",
     "py": "#",
+    "c": "//",
+    "h": "//",
 }
 
 def get_supported_files(
