@@ -18,7 +18,7 @@ class Todo:
     """
     Describes a todo.
     """
-    file: str
+    file_name: str
     line: int
     description: str
 
@@ -30,7 +30,7 @@ class Todo:
 
         :returns: str
         """
-        return f"{self.file}@{self.line}"
+        return f"{self.file_name}@{self.line}"
     
     def show(
         self,
@@ -40,7 +40,7 @@ class Todo:
 
         Format: [FILE]@[LINE NUMBER]: [DESCRIPTION]
         """
-        print(f"{self.file}@{self.line}: {self.description}")
+        print(f"{self.location()}: {self.description}")
 
 @dataclass
 class File:
@@ -120,7 +120,7 @@ def get_todos_from_file(
             
             description: str = line[line.find("TODO:") + len("TODO: "):-1] # Remove everythin until "TODO" and trailing '\n'
 
-            todos.append(Todo(file=file.name, line=line_counter, description=description))
+            todos.append(Todo(file_name=file.name, line=line_counter, description=description))
 
     return todos
 
@@ -168,7 +168,7 @@ if __name__ == "__main__":
         num_todos = num_todos + len(todos)
         num_files = num_files + 1
 
-        print(f"TODOs in {f.name}:")
+        print(f"TODOs in {os.path.relpath(f.path, args.path) if os.path.isdir(args.path) else f.name}:")
         
         for t in todos:
             t.show()
