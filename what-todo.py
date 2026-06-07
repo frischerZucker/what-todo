@@ -52,16 +52,6 @@ class File:
     extension: str
     comment_specifier: str
 
-supported_file_extensions: list[str] = [
-    # Latex
-    "tex",
-    # Python
-    "py",
-    # C
-    "c",
-    "h",
-]
-
 comment_specifiers: dict[str, str] = {
     "tex": "%",
     "py": "#",
@@ -89,9 +79,9 @@ def get_supported_files(
     supported_files: list[File] = []
     if recursive:
         for (current_directory, _, files) in os.walk(directory):
-            supported_files.extend([File(path=os.path.join(current_directory, f), name=f, extension=f.split(".")[-1], comment_specifier=comment_specifiers[f.split(".")[-1]]) for f in files if f.split(".")[-1] in supported_file_extensions])
+            supported_files.extend([File(path=os.path.join(current_directory, f), name=f, extension=f.split(".")[-1], comment_specifier=comment_specifiers[f.split(".")[-1]]) for f in files if f.split(".")[-1] in comment_specifiers.keys()])
     else:
-        file_names: list[str] = [f for f in os.listdir(directory) if f.split(".")[-1] in supported_file_extensions]
+        file_names: list[str] = [f for f in os.listdir(directory) if f.split(".")[-1] in comment_specifiers.keys()]
 
         supported_files = [File(path=os.path.join(directory, f), name=f, extension=f.split(".")[-1], comment_specifier=comment_specifiers[f.split(".")[-1]]) for f in file_names]
 
@@ -161,7 +151,7 @@ if __name__ == "__main__":
         # Path points to a file. -> Directly include the file (if it is of a supported file type).
         file_name: str = os.path.basename(args.path)
 
-        if not file_name.split(".")[-1] in supported_file_extensions:
+        if not file_name.split(".")[-1] in comment_specifiers.keys():
             raise ValueError(f"File type is not supported: {file_name}")
 
         files.append(File(path=args.path, name=file_name, extension=file_name.split(".")[-1], comment_specifier=comment_specifiers[file_name.split(".")[-1]]))
