@@ -57,6 +57,7 @@ comment_specifiers: dict[str, str] = {
     "py": "#",
     "c": "//",
     "h": "//",
+    "todo": "",
 }
 
 def get_supported_files(
@@ -105,23 +106,25 @@ def get_todos_from_file(
 
     line_counter: int = 0
     with open(file.path, "r") as f:
-        for line in f:
-            line_counter = line_counter + 1
+        try:
+            for line in f:
+                line_counter = line_counter + 1
 
-            # We are only looking for todos in comments. -> Ignore line without comments.
-            if not file.comment_specifier in line:
-                continue
-            
-            line = line[line.find(file.comment_specifier):] # Remove everything before the comment starts
+                # We are only looking for todos in comments. -> Ignore line without comments.
+                if not file.comment_specifier in line:
+                    continue
+                
+                line = line[line.find(file.comment_specifier):] # Remove everything before the comment starts
 
-            # Line has no todo. -> Skip.
-            if not "TODO:" in line:
-                continue
-            
-            description: str = line[line.find("TODO:") + len("TODO: "):-1] # Remove everythin until "TODO" and trailing '\n'
+                # Line has no todo. -> Skip.
+                if not "TODO:" in line:
+                    continue
+                
+                description: str = line[line.find("TODO:") + len("TODO: "):-1] # Remove everythin until "TODO" and trailing '\n'
 
-            todos.append(Todo(file_name=file.name, line=line_counter, description=description))
-
+                todos.append(Todo(file_name=file.name, line=line_counter, description=description))
+        except UnicodeDecodeError:
+            print(f"ERROR: Failed to decode line in \"{file.path}\".\n")
     return todos
 
 if __name__ == "__main__":
